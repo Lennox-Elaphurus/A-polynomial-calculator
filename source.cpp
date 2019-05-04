@@ -182,8 +182,17 @@ void assignCtoX(){
 long long int Polynomial::assign(int c);
 int Polynomial::gcd();
 void Polynomial::simp();
-Polynomial::Polynomial(const Polynomial &other);
-Polynomial::Polynomial(const string & name0, const string & pol0);
+Polynomial::Polynomial(const Polynomial &other){
+    name=other.name;
+    int i=0;
+    for(i=0;i<MAX_TIMES+1;++i){
+        pol[i]=other.pol[i];
+    }
+}
+Polynomial::Polynomial(const string & name0, const string & pol0){
+    name=name0;
+    pol0.find('x');
+}
 Polynomial Polynomial::operator+(const Polynomial &other);
 Polynomial Polynomial::operator+=(const Polynomial &other);
 Polynomial Polynomial::operator-(const Polynomial &other);
