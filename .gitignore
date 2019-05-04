@@ -1,0 +1,7 @@
+
+*.pdf
+*.docx
+*.tmp
+*.json
+test.cpp
+test.exe
