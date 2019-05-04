@@ -1,5 +1,6 @@
 #include<iostream>
 #include<vector>
+#define MAX_TIMES 20
 #define MAX_LENGTH 10
 #define MAX_SIZE 1024
 vector<Polynomial> Polynomials;
@@ -78,29 +79,123 @@ void listAllPolynomials(){
     }
     menu();
 }
-void freeCalculation(){
+void freeCalculation(){//just calculate from left to right
     std::out<<"Just write what you want to do without space(like: p=p1+p2-p3*p4): ";
     string operation;
+    bool existAssign=0;
+    string pol_name;//the pol to assign
+    string pol_name2;//the temp pol
+    int cntIndex=0;
+    Polynomial answer;
     std::cin>>operation;
     std::cin.ignore(MAX_SIZE);
-    int operatorIndex[MAX_LENGTH]={0};
+
+    //find the index of operators
+    vector<int> operatorIndex;
     int i=0;
     for(i=0;i<operation.length();++i){
+        if(operation[i]=='+'||operation[i]=='-'||
+        operation[i]=='*'||operation[i]=='='||){
+            operatorIndex.push_back(i);
+            if(operation[i]=='='){
+                existAssign=1;
+            }
+        }
+    }//end find the index of operators
 
+    //deal with '='
+    if(existAssign){//pol=...
+        if(isValidPol(pol_name)){
+            vector<Polynomial>::const_iterator thePol=findPol(pol_name);// is like pointer
+            thePol.assign(operation,0,operatorIndex.at(0));
+            ++cntIndex;
+        }else{
+            std::cout<<"Error, couldn't find "<<pol_name<<" ."<<std::endl;
+            return;
+        }
+    }//end deal with '='
+    
+    //calculate
+    int lastIndex=0;
+    bool toSkip=existAssign; //to skip the '='
+    vector<Polynomial>::const_iterator thePol2;//the pol to +-*
+    for (cntIndex;cntIndex<operatorIndex.size();++cntIndex){
+        if(toSkip) {
+            toSkip=0;
+            continue;
+        };//to skip the '='
+
+        pol_name2.assign(operation,operatorIndex.at(cntIndex-1) + 1,
+        operatorIndex.at(cntIndex)-operatorIndex.at(cntIndex-1) - 1);//match the name between  operator
+        if(isValidPol(pol_name2)){
+            thePol2=findPol(pol_name2);
+        else{
+            std::cout<<"Error, couldn't find "<<pol_name2<<" ."<<std::endl;
+            return;
+        }
+
+        switch(operation[operatorIndex.at(cntIndex)]){// debug: maybe ?
+            case '+':{
+                answer += thePol2;
+                break;
+            }
+            case '-':{
+                answer -= thePol2;
+                break;
+            }
+            case '*':{
+                answer *= thePol2;
+                break;
+            }
+            default:{
+                std::cout<<"Fail to match the operator "<<operation[operatorIndex.at(cntIndex)]<<" ."<<endl;
+                return;
+                break;
+            }
+        }
+    }//end calculate
+
+    if(existAssign){
+        *thePol=answer;
+        std::cout<<pol_name<<" = "<<*thePol<<std::endl;
+    }else{
+        std::cout<<"The answer is "<<answer<<std::endl;
     }
-    vector<string> tempstrings;
-    string tempstr;
-
-    //vector<Polynomial>::const_iterator iter=findPol(const string& name);
 }
 vector<Polynomial>::const_iterator findPol(const string& name);
-void assignCtoX();
+void assignCtoX(){
+    int value=0;
+    string pol_name;
+    std::cout<<"The name of 'ax^n+bx^(n-1)+...' is: ";
+    std::cin>>pol_name;
+    vector<Polynomial>::const_iterator thePol;
+    if(isValidPol(pol_name)){
+        thePol=findPol(pol_name);
+        std::cout<<"x = ";
+        std::cin>>value;
+        std::cout<<pol_name<<" = "<<thePol->assign(value);<<endl;
+    }else{
+        std::cout<<"Error, couldn't find "<<pol_name<<" ."<<std::endl;
+        assignCtoX();
+    }
+}
+long long int Polynomial::assign(int c);
 int Polynomial::gcd();
 void Polynomial::simp();
 Polynomial::Polynomial(const Polynomial &other);
 Polynomial::Polynomial(const string & name0, const string & pol0);
 Polynomial Polynomial::operator+(const Polynomial &other);
+Polynomial Polynomial::operator+=(const Polynomial &other);
 Polynomial Polynomial::operator-(const Polynomial &other);
+Polynomial Polynomial::operator-=(const Polynomial &other);
 Polynomial Polynomial::operator*(const Polynomial &other);
+Polynomial Polynomial::operator*=(const Polynomial &other);
 Polynomial Polynomial::operator=(const Polynomial &other);
 Polynomial Polynomial::operator<<(const Polynomial &other);// p=ax+b , no endl
+Polynomial::Polynomial(){
+    name="";
+    int i=0;
+    for(i=0;i<MAX_TIMES+1;++i){
+        pol[i]=0;
+    }
+}
