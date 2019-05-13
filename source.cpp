@@ -52,18 +52,17 @@ void saveByName(){
     string name;
     string pol;
     std::cin>>name;
-    //std::cin.ignore(MAX_SIZE);
-    bool isNotValid=1;
+    bool isValid=false;
     if(isUsed(name)){
         std::cout<<"My little brother, this name is used, remember?"<<std::endl;
         saveByName();
     }
     else{
-        while(isNotValid){
+        while(true){
             std::cout<<"Write the 'ax^n+bx^n-1+...' here: ";
             std::cin>>pol;
-            //std::cin.ignore(MAX_SIZE);
-            isNotValid=!isValidPol(pol);
+            isValid=isValidPol(pol);
+            if(isValid==true) break;//is valid
             std::cout<<"You entered "<<pol<<" .It's not valid."<<std::endl;
             std::cout<<"Please write as 'ax^n+bx^n-1+...'."<<std::endl;
         }
