@@ -4,9 +4,9 @@
 using std::string;
 class Polynomial
 {
-    string name; //MAX_LENGTH name of Polynomial
-    int pol[MAX_TIMES];  //MAX_TIMES
 public:
+    std::string name; //MAX_LENGTH name of Polynomial
+    int pol[MAX_TIMES];  //MAX_TIMES
     Polynomial();
     Polynomial(const Polynomial &other);
     Polynomial(const string & name0, const string & pol0);
@@ -22,8 +22,8 @@ public:
     int gcd()const;
     void simp();
     long long int assign(int c);
-    friend bool isUsed(const std::string& name);
-    friend std::vector<Polynomial>::iterator findPol(const std::string&  name);
+    // friend bool isUsed(const std::string& name);
+    // friend Polynomial* findPol(const std::string&  name);
 };
 void menu();
 
@@ -34,8 +34,9 @@ bool isUsed(const std::string& name);
 void listAllPolynomials();
 
 void freeCalculation();
-std::vector<Polynomial>::iterator findPol(const std::string&  name);
+Polynomial* findPol(const std::string&  name);
 
 void assignCtoX();
 
 std::ostream& operator<<(std::ostream& cout,const Polynomial& other);
+std::string mysubstr(const std::string& str,int start,int end);
