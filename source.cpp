@@ -6,7 +6,7 @@
 #define MAX_LENGTH 10
 #define MAX_SIZE 1024
 #include"source.hpp"
-vector<Polynomial> Polynomials;
+std::vector<Polynomial> Polynomials;
 void menu(){
     std::cout<<"\tYou want to:"<<std::endl;
     std::cout<<"\t[1] Write 'ax^n+bx^n-1+...' as 'p'\n"//write and save by name
@@ -78,7 +78,7 @@ bool isValidPol(const std::string& pol){
     return isValid;
 }
 bool isUsed(const std::string& name){//friend
-    vector<Polynomial>::iterator iter=Polynomials.begin();
+    std::vector<Polynomial>::iterator iter=Polynomials.begin();
     bool used=false;
     for(iter=Polynomials.begin();iter!=Polynomials.end();++iter){
         if(iter->name==name){
@@ -110,11 +110,11 @@ void freeCalculation(){//just calculate from left to right
     std::cin.ignore(MAX_SIZE);
 
     //find the index of operators
-    vector<int> operatorIndex; //store the index of operator
+    std::vector<int> operatorIndex; //store the index of operator
     int i=0;
     for(i=0;i<operation.length();++i){
-        if(operation[i]=='+'||operation[i]=='-'||
-        operation[i]=='*'||operation[i]=='='||){
+        if(operation[i]=='+'||operation[i]=='-'
+        ||operation[i]=='*'||operation[i]=='='){
             operatorIndex.push_back(i);
             if(operation[i]=='='){
                 existAssign=1;
@@ -123,11 +123,11 @@ void freeCalculation(){//just calculate from left to right
     }//end find the index of operators
 
     //deal with '='
-    vector<Polynomial>::const_iterator thePol;
+    std::vector<Polynomial>::iterator thePol;
     if(existAssign){//pol=...
         if(isValidPol(pol_name)){
             thePol=findPol(pol_name);// is like pointer
-            thePol.assign(operation,0,operatorIndex.at(0));
+            thePol.assign(operation,0,operatorIndex.at(0)); //?? what am i doing ?
             ++cntIndex;
         }else{
             std::cout<<"Error, couldn't find "<<pol_name<<" ."<<std::endl;
@@ -138,7 +138,7 @@ void freeCalculation(){//just calculate from left to right
     //calculate
     int lastIndex=0;
     bool toSkip=existAssign; //to skip the '='
-    vector<Polynomial>::const_iterator thePol2;//the pol to +-*
+    std::vector<Polynomial>::const_iterator thePol2;//the pol to +-*
     for (cntIndex;cntIndex<operatorIndex.size();++cntIndex){
         if(toSkip) {
             toSkip=0;
@@ -148,26 +148,26 @@ void freeCalculation(){//just calculate from left to right
         operatorIndex.at(cntIndex)-operatorIndex.at(cntIndex-1) - 1);//match the name between  operator
         if(isValidPol(pol_name2)){
             thePol2=findPol(pol_name2);
-        else{
+        }else{
             std::cout<<"Error, couldn't find "<<pol_name2<<" ."<<std::endl;
             return;
         }
 
         switch(operation[operatorIndex.at(cntIndex)]){// debug: maybe ?
             case '+':{
-                answer += thePol2;
-                break;
+                answer += *thePol2; //thePol2 is a const_iterator
+                break;              //answer is a Polynomial
             }
             case '-':{
-                answer -= thePol2;
+                answer -= *thePol2;
                 break;
             }
             case '*':{
-                answer *= thePol2;
+                answer *= *thePol2;
                 break;
             }
             default:{
-                std::cout<<"Fail to match the operator "<<operation[operatorIndex.at(cntIndex)]<<" ."<<endl;
+                std::cout<<"Fail to match the operator "<<operation[operatorIndex.at(cntIndex)]<<" ."<<std::endl;
                 return;
                 break;
             }
@@ -181,10 +181,10 @@ void freeCalculation(){//just calculate from left to right
         std::cout<<"The answer is "<<answer<<std::endl;
     }
 }
-vector<Polynomial>::iterator findPol(const string& name){
+std::vector<Polynomial>::iterator findPol(const string& name){
     //find in <vector>Polynomials
     //already verified that name is in Polynomials
-    vector<Polynomial>::iterator iter=Polynomials.begin();
+    std::vector<Polynomial>::iterator iter=Polynomials.begin();
     for(iter=Polynomials.begin();iter!=Polynomials.end();++iter){
         if(iter->name==name){
             return iter;
@@ -194,10 +194,11 @@ vector<Polynomial>::iterator findPol(const string& name){
 }
 void assignCtoX(){
     int value=0;
-    string pol_name;
+    std::string pol_name;
     std::cout<<"The name of 'ax^n+bx^(n-1)+...' is: ";
     std::cin>>pol_name;
-    vector<Polynomial>::const_iterator thePol;
+    std::vector<Polynomial>::iterator thePol;
+    //std::iterator thePol;
     if(isValidPol(pol_name)){
         thePol=findPol(pol_name);
         std::cout<<"x = ";
@@ -324,15 +325,15 @@ void Polynomial::operator=(const Polynomial &other){
         pol[i]=other.pol[i];
     }
 }
-std::ostream& Polynomial::operator<<(std::ostream& cout){     // p=ax+b , no endl
-    cout<<this->name<<"=";
+std::ostream& operator<<(std::ostream& cout,const Polynomial& thePol){     // p=ax+b , no endl,friend
+    cout<<thePol.name<<"=";
     int i=0;
     bool isFirst=true;
     for(i=MAX_TIMES-1;i>=0;--i){
-        if(this->pol[i]!=0){
-            if(this->pol[i]>0&&isFirst==false) cout<<"+";
+        if(thePol.pol[i]!=0){
+            if(thePol.pol[i]>0&&isFirst==false) cout<<"+";
             if(isFirst) isFirst=false;
-            cout<<this->pol[i];
+            cout<<thePol.pol[i];
             if(i!=0) cout<<"x^"<<i;
         }
     }

@@ -17,13 +17,13 @@ public:
     Polynomial operator*(const Polynomial &other);
     Polynomial operator*=(const Polynomial &other);
     void operator=(const Polynomial &other);
-    std::ostream& operator<<(std::ostream& cout)
+    friend std::ostream& operator<<(std::ostream& cout,const Polynomial& other);
     //bool operator==(const Polynomial &other) const;
     int gcd()const;
     void simp();
     long long int assign(int c);
     friend bool isUsed(const std::string& name);
-    friend vector<Polynomial>::iterator findPol(const std::string&  name);
+    friend std::vector<Polynomial>::iterator findPol(const std::string&  name);
 };
 void menu();
 
@@ -34,6 +34,8 @@ bool isUsed(const std::string& name);
 void listAllPolynomials();
 
 void freeCalculation();
-vector<Polynomial>::iterator findPol(const std::string&  name);
+std::vector<Polynomial>::iterator findPol(const std::string&  name);
 
 void assignCtoX();
+
+std::ostream& operator<<(std::ostream& cout,const Polynomial& other);
