@@ -5,7 +5,7 @@ using std::string;
 class Polynomial
 {
     string name; //MAX_LENGTH name of Polynomial
-    int pol[MAX_TIMES+1];  //MAX_TIMES
+    int pol[MAX_TIMES];  //MAX_TIMES
 public:
     Polynomial();
     Polynomial(const Polynomial &other);
@@ -16,8 +16,8 @@ public:
     Polynomial operator-=(const Polynomial &other);
     Polynomial operator*(const Polynomial &other);
     Polynomial operator*=(const Polynomial &other);
-    Polynomial operator=(const Polynomial &other);
-    Polynomial operator<<(const Polynomial &other);
+    void operator=(const Polynomial &other);
+    ostream& operator<<(ostream& cout);
     //bool operator==(const Polynomial &other) const;
     int gcd()const;
     void simp();
