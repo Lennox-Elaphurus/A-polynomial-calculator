@@ -29,12 +29,11 @@ void menu();
 
 void saveByName();
 bool isValidPol(const string& pol);
-//bool isUsed(string);
+bool isUsed(const std::string& name);
 
 void listAllPolynomials();
 
 void freeCalculation();
-//vector<Polynomial>::const_iterator findPol(const string& name);
+vector<Polynomial>::iterator findPol(const std::string&  name);
 
 void assignCtoX();
-#include"source.cpp"

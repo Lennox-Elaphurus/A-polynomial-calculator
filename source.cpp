@@ -1,9 +1,11 @@
 #include<iostream>
 #include<vector>
 #include<string>
+#include <cmath>
 #define MAX_TIMES 20
 #define MAX_LENGTH 10
 #define MAX_SIZE 1024
+#include"source.hpp"
 vector<Polynomial> Polynomials;
 void menu(){
     std::cout<<"\tYou want to:"<<std::endl;
@@ -200,7 +202,7 @@ void assignCtoX(){
         thePol=findPol(pol_name);
         std::cout<<"x = ";
         std::cin>>value;
-        std::cout<<pol_name<<" = "<<thePol->assign(value);<<endl;
+        std::cout<<pol_name<<" = "<<thePol->assign(value)<<std::endl;
     }else{
         std::cout<<"Error, couldn't find "<<pol_name<<" ."<<std::endl;
         assignCtoX();
@@ -210,11 +212,11 @@ long long int Polynomial::assign(int c){
     long long int value=0;
     int i=0;
     for(i=0;i<MAX_TIMES;++i){
-        value+=pol[i]*pow(c,i);
+        value+=pol[i]*std::pow(c,i);
     }
     return value;
 }
-int Polynomial::gcd(){
+int Polynomial::gcd()const{
     int theGcd=1;
     int i=0;
     for(i=0;pol[i]==0;++i); //find a not 0 coefficient(xishu)
@@ -284,7 +286,7 @@ Polynomial::Polynomial(const string & name0, const string & pol0){
 }
 Polynomial Polynomial::operator+(const Polynomial &other){
     Polynomial temp(*this);
-    temp.name=*this.name;
+    temp.name=this->name;
     int i=0;
     for(i=0;i<MAX_TIMES;++i){
         temp.pol[i]+=other.pol[i];
