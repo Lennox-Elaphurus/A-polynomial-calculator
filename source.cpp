@@ -67,8 +67,24 @@ void saveByName(){
     }
     menu();
 }
-bool isValidPol(const string& pol);
-bool isUsed(string);//friend
+bool isValidPol(const std::string& pol){
+    bool isValid=false;
+    //.find(",")=4294967295 means didn't find it ,I don't know why
+    if(pol.find("(")!=4294967295&&pol.find(")")!=4294967295
+    &&pol.find(",")!=4294967295)
+        isValid=true;
+    return isValid;
+}
+bool isUsed(const std::string& name){//friend
+    vector<Polynomial>::iterator iter=Polynomials.begin();
+    bool used=false;
+    for(iter=Polynomials.begin();iter!=Polynomials.end();++iter){
+        if(iter->name==name){
+            used=true;
+        }
+    }
+    return used;
+}
 void listAllPolynomials(){
     if(!Polynomials.empty();){
         std::cout<<"\tI remember: "<<std::endl;
@@ -163,17 +179,16 @@ void freeCalculation(){//just calculate from left to right
         std::cout<<"The answer is "<<answer<<std::endl;
     }
 }
-vector<Polynomial>::const_iterator findPol(const string& name){
+vector<Polynomial>::iterator findPol(const string& name){
     //find in <vector>Polynomials
     //already verified that name is in Polynomials
-    //or return null?
-    int i=0;
-    for(i=0;i<Polynomials.size();==i){
-        if(Polynomials[i].name==name){
-            return &Polynomials[i];
+    vector<Polynomial>::iterator iter=Polynomials.begin();
+    for(iter=Polynomials.begin();iter!=Polynomials.end();++iter){
+        if(iter->name==name){
+            return iter;
         }
     }
-    std::cou<<"Error, didn't find the name in Polynomials"<<std::endl;
+    std::cout<<"Error, didn't find the name in Polynomials"<<std::endl;
 }
 void assignCtoX(){
     int value=0;
@@ -279,7 +294,7 @@ Polynomial Polynomial::operator+(const Polynomial &other){
 Polynomial Polynomial::operator+=(const Polynomial &other){*this=*this+other;}
 Polynomial Polynomial::operator-(const Polynomial &other){
     Polynomial temp(*this);
-    temp.name=*this.name;
+    temp.name=this->name;
     int i=0;
     for(i=0;i<MAX_TIMES;++i){
         temp.pol[i]-=other.pol[i];
@@ -289,12 +304,12 @@ Polynomial Polynomial::operator-(const Polynomial &other){
 Polynomial Polynomial::operator-=(const Polynomial &other){*this=*this-other;}
 Polynomial Polynomial::operator*(const Polynomial &other){
     Polynomial temp;
-    temp.name=*this.name;
+    temp.name=this->name;
     int i1=0;
     int i2=0;
     for(i1=0;i1<MAX_TIMES;++i1){
         for(i2=0;i2<MAX_TIMES;++i2){
-            temp.pol[i1+i2]=*this.pol[i1]+other.pol[i2];
+            temp.pol[i1+i2]=this->pol[i1]+other.pol[i2];
         }
     }
     return temp;
@@ -307,7 +322,7 @@ void Polynomial::operator=(const Polynomial &other){
         pol[i]=other.pol[i];
     }
 }
-ostream& Polynomial::operator<<(ostream& cout){// p=ax+b , no endl
+std::ostream& Polynomial::operator<<(std::ostream& cout){     // p=ax+b , no endl
     cout<<this->name<<"=";
     int i=0;
     bool isFirst=true;
