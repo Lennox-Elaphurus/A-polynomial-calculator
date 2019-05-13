@@ -5,8 +5,10 @@
 #define MAX_TIMES 20
 #define MAX_LENGTH 10
 #define MAX_SIZE 1024
+#define MAX_POLS 100
+#define MAX_OPERATIONS 100
 #include"source.hpp"
-std::vector<Polynomial> Polynomials;
+Polynomial Polynomials[MAX_POLS];
 void menu(){
     std::cout<<"\tYou want to:"<<std::endl;
     std::cout<<"\t[1] Write 'ax^n+bx^n-1+...' as 'p'\n"//write and save by name
@@ -107,6 +109,8 @@ Procedure:
     take the string between each operator as a pol
     take out a operator from the operation list
     assign the result to "answer" or the p he wants
+
+Polynomial Polynomials[MAX_POLS]
 """
     std::out<<"Just write what you want to do without space(like: p=p1+p2-p3*p4): ";
     std::string combinedPol;//e.g."p=p1+p2-p3*p4" ,space is not allowed
@@ -121,12 +125,19 @@ Procedure:
     std::cin.ignore(MAX_SIZE);
 
     //find the index of operators
-    std::vector<int> operatorIndex; //store the index of operator
+    int operatorIndex[MAX_TIMES]=0; //store the index of operator
     int i=0;
+    int i2=0;
     for(i=0;i<combinedPol.length();++i){
         if(combinedPol[i]=='+'||combinedPol[i]=='-'
         ||combinedPol[i]=='*'||combinedPol[i]=='='){
-            operatorIndex.push_back(i);
+            //operatorIndex.push_back(i);
+            for(i2=0;i2<MAX_OPERATIONS;++i2){
+                if(operatorIndex[i2]!=0){
+                    operatorIndex[i2]=i;
+                    break;
+                }
+            }
             if(combinedPol[i]=='='){
                 existAssignOperator=1;
             }
@@ -134,12 +145,12 @@ Procedure:
     }//end find the index of operators
 
     //deal with '='
-    std::vector<Polynomial>::iterator thePol;
+    Polynomial* thePol;
     if(existAssignOperator){//pol=...
         if(isValidPol(pol_name)){
-            thePol=findPol(pol_name);// is like pointer
-            thePol.assign(combinedPol,0,operatorIndex.at(0)); //?? what am i doing ?
-            ++cntIndex;
+            thePol=findPol(pol_name);// is like pointer,let the p in p=...,pointed by thePol
+            //thePol.assign(combinedPol,0,operatorIndex.at(0));
+            ++cntIndex;//turn to next operation
         }else{
             std::cout<<"Error, couldn't find "<<pol_name<<" ."<<std::endl;
             return;
