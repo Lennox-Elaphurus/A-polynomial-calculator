@@ -73,7 +73,7 @@ bool isValidPol(const std::string& pol){
     bool isValid=false;
     //.find(",")=4294967295 means didn't find it ,I don't know why
     if(pol.find("(")!=4294967295&&pol.find(")")!=4294967295
-    &&pol.find(",")!=4294967295)
+    &&pol.find(",")!=4294967295&&pol.find(" ")!=4294967295)
         isValid=true;
     return isValid;
 }
@@ -99,35 +99,46 @@ void listAllPolynomials(){
     menu();
 }
 void freeCalculation(){//just calculate from left to right
+"""
+Procedure:
+1.find the index of operator in the string,put them into std::vector<int> operatorIndex
+2.check whether there is a "=",let left value be the pol(check everytime input a pol)
+3.for each step of calculation:
+    take the string between each operator as a pol
+    take out a operator from the operation list
+    assign the result to "answer" or the p he wants
+"""
     std::out<<"Just write what you want to do without space(like: p=p1+p2-p3*p4): ";
-    std::string operation;//"p=p1+p2-p3*p4"
-    bool existAssign=0;
+    std::string combinedPol;//e.g."p=p1+p2-p3*p4" ,space is not allowed
+    bool existAssignOperator=0;//exist "="
     std::string pol_name;//the pol to assign
-    std::string pol_name2;//the temp pol
+    std::string pol_name_tmp;//the temp pol
     int cntIndex=0;
+    //count the number of operators,then use as index,for there may exist"="
+    //e.g.(cntIndex;cntIndex<operatorIndex.size();++cntIndex)
     Polynomial answer;
-    std::cin>>operation;
+    std::cin>>combinedPol;
     std::cin.ignore(MAX_SIZE);
 
     //find the index of operators
     std::vector<int> operatorIndex; //store the index of operator
     int i=0;
-    for(i=0;i<operation.length();++i){
-        if(operation[i]=='+'||operation[i]=='-'
-        ||operation[i]=='*'||operation[i]=='='){
+    for(i=0;i<combinedPol.length();++i){
+        if(combinedPol[i]=='+'||combinedPol[i]=='-'
+        ||combinedPol[i]=='*'||combinedPol[i]=='='){
             operatorIndex.push_back(i);
-            if(operation[i]=='='){
-                existAssign=1;
+            if(combinedPol[i]=='='){
+                existAssignOperator=1;
             }
         }
     }//end find the index of operators
 
     //deal with '='
     std::vector<Polynomial>::iterator thePol;
-    if(existAssign){//pol=...
+    if(existAssignOperator){//pol=...
         if(isValidPol(pol_name)){
             thePol=findPol(pol_name);// is like pointer
-            thePol.assign(operation,0,operatorIndex.at(0)); //?? what am i doing ?
+            thePol.assign(combinedPol,0,operatorIndex.at(0)); //?? what am i doing ?
             ++cntIndex;
         }else{
             std::cout<<"Error, couldn't find "<<pol_name<<" ."<<std::endl;
@@ -137,23 +148,23 @@ void freeCalculation(){//just calculate from left to right
 
     //calculate
     int lastIndex=0;
-    bool toSkip=existAssign; //to skip the '='
+    bool toSkip=existAssignOperator; //to skip the '='
     std::vector<Polynomial>::const_iterator thePol2;//the pol to +-*
     for (cntIndex;cntIndex<operatorIndex.size();++cntIndex){
         if(toSkip) {
             toSkip=0;
             continue;
         };//to skip the '='
-        pol_name2.assign(operation,operatorIndex.at(cntIndex-1) + 1,
+        pol_name_tmp.assign(combinedPol,operatorIndex.at(cntIndex-1) + 1,
         operatorIndex.at(cntIndex)-operatorIndex.at(cntIndex-1) - 1);//match the name between  operator
-        if(isValidPol(pol_name2)){
-            thePol2=findPol(pol_name2);
+        if(isValidPol(pol_name_tmp)){
+            thePol2=findPol(pol_name_tmp);
         }else{
-            std::cout<<"Error, couldn't find "<<pol_name2<<" ."<<std::endl;
+            std::cout<<"Error, couldn't find "<<pol_name_tmp<<" ."<<std::endl;
             return;
         }
 
-        switch(operation[operatorIndex.at(cntIndex)]){// debug: maybe ?
+        switch(combinedPol[operatorIndex.at(cntIndex)]){// debug: maybe ?
             case '+':{
                 answer += *thePol2; //thePol2 is a const_iterator
                 break;              //answer is a Polynomial
@@ -167,14 +178,14 @@ void freeCalculation(){//just calculate from left to right
                 break;
             }
             default:{
-                std::cout<<"Fail to match the operator "<<operation[operatorIndex.at(cntIndex)]<<" ."<<std::endl;
+                std::cout<<"Fail to match the operator "<<combinedPol[operatorIndex.at(cntIndex)]<<" ."<<std::endl;
                 return;
                 break;
             }
         }
     }//end calculate
 
-    if(existAssign){
+    if(existAssignOperator){
         *thePol=answer;
         std::cout<<pol_name<<" = "<<*thePol<<std::endl;
     }else{
