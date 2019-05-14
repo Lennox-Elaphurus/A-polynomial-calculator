@@ -169,12 +169,13 @@ Polynomial Polynomials[MAX_POLS]
 
     //calculate
     bool isFirst=true;//is the first time in the for
+    if(existAssignOperator) isFirst=false;
     Polynomial* thePol_tmp;//the pol to +-*
     for (cntIndex;cntIndex<MAX_TIMES;++cntIndex){
+        if(operatorIndex[cntIndex]==0&&operatorIndex[cntIndex+1]==0) break;
         if(isFirst){
             pol_name_tmp=mysubstr(combinedPol,0,operatorIndex[cntIndex]);
-            isFirst=false;
-            --cntIndex;
+            //isFirst=false; need to change at the end of this turn to use it in switch
         }else{//cntIndex!=0
             pol_name_tmp=mysubstr(combinedPol,operatorIndex[cntIndex],operatorIndex[cntIndex+1]);
         }
@@ -183,7 +184,7 @@ Polynomial Polynomials[MAX_POLS]
             //std::cout<<"valid pol_name_tmp:'"<<pol_name_tmp<<"' ."<<std::endl;
             thePol_tmp=findPol(pol_name_tmp);
         }else{
-            std::cout<<"Error, couldn't find "<<pol_name_tmp<<" ."<<std::endl;
+            std::cout<<"Error, couldn't find '"<<pol_name_tmp<<"' ."<<std::endl;
             return;
         }
 
@@ -201,10 +202,14 @@ Polynomial Polynomials[MAX_POLS]
                 break;
             }
             default:{
-                std::cout<<"Fail to match the operator "<<combinedPol[operatorIndex[cntIndex]]<<" ."<<std::endl;
+                std::cout<<"Fail to match the operator '"<<combinedPol[operatorIndex[cntIndex]]<<"' ."<<std::endl;
                 return;
                 break;
             }
+        }
+        if(isFirst){
+            isFirst=false;
+            --cntIndex;
         }
     }//end calculate
 
@@ -403,7 +408,7 @@ void Polynomial::operator=(const Polynomial &other){
     }
 }
 std::ostream& operator<<(std::ostream& cout,const Polynomial& thePol){     // p=ax+b , no endl,friend
-    cout<<thePol.name<<"=";
+    if(thePol.name!="DEFAULT") cout<<thePol.name<<"=";
     int i=0;
     bool isFirst=true;
     for(i=MAX_TIMES-1;i>=0;--i){
@@ -425,6 +430,7 @@ Polynomial::Polynomial(){
 }
 std::string mysubstr(const std::string& str,int start,int end){
     std::string tempStr;
+    if(end==0) end=str.length();
     int i=start+1;
     if(start==0) i-=1;
     for(i;i<end;++i){
