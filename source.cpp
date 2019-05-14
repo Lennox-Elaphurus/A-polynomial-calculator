@@ -1,6 +1,6 @@
 #include<iostream>
 #include<string>
-#include <cmath>
+#include <math.h>
 #define MAX_TIMES 20
 #define MAX_LENGTH 10
 #define MAX_SIZE 1024
@@ -9,7 +9,7 @@
 #include"source.hpp"
 Polynomial Polynomials[MAX_POLS];
 void menu(){
-    std::cout<<"\tYou want to:"<<std::endl;
+    std::cout<<"\nYou want to:"<<std::endl;
     std::cout<<"\t[1] Write 'ax^n+bx^n-1+...' as 'p'\n"//write and save by name
     <<"\t[2] Watch 'ax^n+bx^(n-1)+...' you wrote\n"//list the stored Polynomials
     <<"\t[3] p1 + p2 - p3 * p4 (write as you want)\n"//free calculation by operator
@@ -60,7 +60,7 @@ void saveByName(){
     }
     else{
         while(true){
-            std::cout<<"Write the 'ax^n+bx^n-1+...' here: ";
+            std::cout<<"Write the 'ax^n+bx^n-1+...(cx^0)' here: ";
             std::cin>>pol;
             isValid=isValidPol(pol);
             if(isValid==true) break;//is valid
@@ -94,11 +94,11 @@ bool isUsed(const std::string& name){//friend
 }
 void listAllPolynomials(){
     int i=0;
-    if(!((Polynomials[0].name)!="DEFAULT")){
-        std::cout<<"\tI remember: "<<std::endl;
+    if((Polynomials[0].name)!="DEFAULT"){
+        std::cout<<"I remember: "<<std::endl;
         for (i=0;i<MAX_POLS;++i){
             if(Polynomials[i].name!="DEFAULT")
-                std::cout<<Polynomials[i]<<std::endl;
+                std::cout<<"\t"<<Polynomials[i]<<std::endl;
         }
     }else{
         std::cout<<"There is nothing to show you."<<std::endl;
@@ -115,6 +115,7 @@ Procedure:
     take out a operator from the operation list
     assign the result to "answer" or the p he wants
 
+How to verify whether it is the end?
 Polynomial Polynomials[MAX_POLS]
 */
     std::cout<<"Just write what you want to do without space(like: p=p1+p2-p3*p4): ";
@@ -138,7 +139,7 @@ Polynomial Polynomials[MAX_POLS]
         ||combinedPol[i]=='*'||combinedPol[i]=='='){
             //operatorIndex.push_back(i);
             for(i2=0;i2<MAX_OPERATIONS;++i2){
-                if(operatorIndex[i2]!=0){
+                if(operatorIndex[i2]==0){
                     operatorIndex[i2]=i;
                     break;
                 }
@@ -165,7 +166,6 @@ Polynomial Polynomials[MAX_POLS]
 
     //calculate
     int lastIndex=0;
-    // bool toSkip=existAssignOperator; //to skip the '='
     Polynomial* thePol_tmp;//the pol to +-*
     for (cntIndex;cntIndex<MAX_TIMES;++cntIndex){
         pol_name_tmp=mysubstr(combinedPol,operatorIndex[cntIndex],operatorIndex[cntIndex+1]);
@@ -203,6 +203,7 @@ Polynomial Polynomials[MAX_POLS]
     }else{
         std::cout<<"The answer is "<<answer<<std::endl;
     }
+    menu();
 }
 Polynomial* findPol(const string& name){
     //find in Polynomials[]
@@ -232,6 +233,7 @@ void assignCtoX(){
         std::cout<<"Error, couldn't find "<<pol_name<<" ."<<std::endl;
         assignCtoX();
     }
+    menu();
 }
 long long int Polynomial::assign(int c){
     long long int value=0;
@@ -274,6 +276,9 @@ Polynomial::Polynomial(const Polynomial &other){
     name=other.name;
     int i=0;
     for(i=0;i<MAX_TIMES;++i){
+        pol[i]=0;
+    }
+    for(i=0;i<MAX_TIMES;++i){
         pol[i]=other.pol[i];
     }
 }
@@ -285,23 +290,55 @@ Polynomial::Polynomial(const string & name0, const string & pol0){
         pol[i]=0;
     }
     std::string polString=pol0;
-    int start=0;
+    int start=0;//the start of substring1
+    int start2=0;//the start of substring2, used to get the second substring
+    int plus=0;//the index of the position of "+"
+    int minus=0;//the index of the position of "-"
     std::string substring=polString;
     int coefficient=0;  //xishu
     int exponent=0;     //zhishu
     while(true){
+        //std::cout<<"Substring brfore:'"<<substring<<"'\n";
         if(start<MAX_LENGTH&&start!=-1&&start!=0)
         // when start=-1,it means didn't find "^"
         //when start=0,it's the original string
             substring=substring.substr(start+1);//substring from the next element of "^"
+        //std::cout<<"Substring after:'"<<substring<<"'\n\n";
         if(substring.empty()==false){
             if(coefficient==0)  //is a coefficient
                 coefficient=std::stoi(substring);
             else{   //is an exponent
                 exponent=std::stoi(substring);
                 pol[exponent]=coefficient;
+                //reinitialize
+                coefficient=0;  //xishu
+                exponent=0;     //zhishu
+                //end reinitialize
                 if(substring.find("^")==-1&&substring.find("+")==-1
                 &&substring.find("-")==-1) break;//is the last one
+                if(substring.find("+")!=-1||substring.find("-")!=-1){
+                //b+cx^d,delete b
+                    //find start2
+                    plus=substring.find("+");
+                    minus=substring.find("-");
+                    if(plus==-1){
+                        if(minus==-1){//plus=-1,minus=-1
+                            start2=0;
+                        }else{//plus=-1,minus=c
+                            start2=minus;
+                        }
+                    } else{
+                        if(minus==-1){//plus=c,minus=-1
+                            start2=plus;
+                        }else{//plus=c1,minus=c2
+                            start2=plus;
+                            if(start2>minus) start2=minus;//to get the first operator
+                        }
+                    }//end find start2
+                    substring=substring.substr(start2);//get the cx^d instead from b+cx^d
+                    start=0;//or it will skip the c
+                    continue;//don't need to start=substring.find("^");
+                }
             }
         }else{//the last one whithout x
             if(coefficient!=0&&exponent==0){
@@ -311,12 +348,8 @@ Polynomial::Polynomial(const string & name0, const string & pol0){
         };
         //end input as int
         start=substring.find("^");// what if didn't find ?:return -1
-        std::cout<<"Substring:'"<<substring<<"'\n";
-        //reinitialize
-        if(exponent!=0){
-            coefficient=0;  //xishu
-            exponent=0;     //zhishu
-        }
+        //std::cout<<"Substring:'"<<substring<<"'\n";
+        
     }
 
 }
