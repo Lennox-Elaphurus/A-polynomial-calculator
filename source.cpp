@@ -55,6 +55,7 @@ void saveByName(){
     bool isValid=false;
     if(isUsed(name)){
         std::cout<<"My little brother, this name is used, remember?"<<std::endl;
+        std::cout<<"Try again."<<std::endl;
         saveByName();
     }
     else{
@@ -63,11 +64,11 @@ void saveByName(){
             std::cin>>pol;
             isValid=isValidPol(pol);
             if(isValid==true) break;//is valid
-            std::cout<<"You entered "<<pol<<" .It's not valid."<<std::endl;
+            std::cout<<"You entered ‘"<<pol<<"’ .It's not valid."<<std::endl;
             std::cout<<"Please write as 'ax^n+bx^n-1+...'."<<std::endl;
         }
         Polynomial newpol(name,pol);
-        Polynomial* write=findPol("DEFAULT");//find the empty element
+        Polynomial* write=findPol("DEFAULT");//find an empty element
         *write=newpol;//add to list
         std::cout<<"Fine, now I remember:"<<*write<<std::endl;
     }
@@ -76,8 +77,8 @@ void saveByName(){
 bool isValidPol(const std::string& pol){
     bool isValid=false;
     //.find(",")=4294967295 means didn't find it ,I don't know why
-    if(pol.find("(")!=4294967295&&pol.find(")")!=4294967295
-    &&pol.find(",")!=4294967295&&pol.find(" ")!=4294967295)
+    if(pol.find("(")==4294967295&&pol.find(")")==4294967295
+    &&pol.find(",")==4294967295&&pol.find(" ")==4294967295)
         isValid=true;
     return isValid;
 }
@@ -278,21 +279,29 @@ Polynomial::Polynomial(const Polynomial &other){
 }
 Polynomial::Polynomial(const string & name0, const string & pol0){
     name=name0;
-    //find x,return the pointer to atoi
+    //initialize the latter empty coefficient
+    int i=0;
+    for(i=0;i<MAX_TIMES;++i){
+        pol[i]=0;
+    }
     std::string polString=pol0;
     int start=0;
-    std::string substring;
+    std::string substring=polString;
     int coefficient=0;  //xishu
     int exponent=0;     //zhishu
     while(true){
-        if(start<MAX_LENGTH)
-            substring=polString.substr(start);
+        if(start<MAX_LENGTH&&start!=-1&&start!=0)
+        // when start=-1,it means didn't find "^"
+        //when start=0,it's the original string
+            substring=substring.substr(start+1);//substring from the next element of "^"
         if(substring.empty()==false){
             if(coefficient==0)  //is a coefficient
                 coefficient=std::stoi(substring);
             else{   //is an exponent
                 exponent=std::stoi(substring);
                 pol[exponent]=coefficient;
+                if(substring.find("^")==-1&&substring.find("+")==-1
+                &&substring.find("-")==-1) break;//is the last one
             }
         }else{//the last one whithout x
             if(coefficient!=0&&exponent==0){
@@ -301,10 +310,13 @@ Polynomial::Polynomial(const string & name0, const string & pol0){
             break;
         };
         //end input as int
-        start=polString.find("^");
+        start=substring.find("^");// what if didn't find ?:return -1
+        std::cout<<"Substring:'"<<substring<<"'\n";
         //reinitialize
-        coefficient=0;  //xishu
-        exponent=0;     //zhishu
+        if(exponent!=0){
+            coefficient=0;  //xishu
+            exponent=0;     //zhishu
+        }
     }
 
 }
