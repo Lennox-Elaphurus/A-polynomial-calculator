@@ -157,6 +157,7 @@ Polynomial Polynomials[MAX_POLS]
         //thePol.assign(combinedPol,0,operatorIndex.at(0));
         ++cntIndex;//turn to next operation
         if(isValidPol(pol_name)){
+            std::cout<<"valid pol_name:'"<<pol_name<<"' ."<<std::endl;
             thePol=findPol(pol_name);// is like pointer,let the p in p=...,pointed by thePol
         }else{
             std::cout<<"Error, couldn't find "<<pol_name<<" ."<<std::endl;
@@ -168,8 +169,13 @@ Polynomial Polynomials[MAX_POLS]
     int lastIndex=0;
     Polynomial* thePol_tmp;//the pol to +-*
     for (cntIndex;cntIndex<MAX_TIMES;++cntIndex){
-        pol_name_tmp=mysubstr(combinedPol,operatorIndex[cntIndex],operatorIndex[cntIndex+1]);
+        if(cntIndex==0){
+            pol_name_tmp=mysubstr(combinedPol,0,operatorIndex[cntIndex]);
+        }else{//cntIndex!=0
+            pol_name_tmp=mysubstr(combinedPol,operatorIndex[cntIndex],operatorIndex[cntIndex+1]);
+        }
         if(isValidPol(pol_name_tmp)){
+            std::cout<<"valid pol_name_tmp:'"<<pol_name<<"' ."<<std::endl;
             thePol_tmp=findPol(pol_name_tmp);
         }else{
             std::cout<<"Error, couldn't find "<<pol_name_tmp<<" ."<<std::endl;
@@ -178,15 +184,15 @@ Polynomial Polynomials[MAX_POLS]
 
         switch(combinedPol[operatorIndex[cntIndex]]){// debug: maybe ?
             case '+':{
-                answer += *thePol_tmp; //thePol_tmp is a const_iterator
+                answer = answer + *thePol_tmp; //thePol_tmp is a const_iterator
                 break;              //answer is a Polynomial
             }
             case '-':{
-                answer -= *thePol_tmp;
+                answer = answer - *thePol_tmp;
                 break;
             }
             case '*':{
-                answer *= *thePol_tmp;
+                answer = answer * *thePol_tmp;
                 break;
             }
             default:{
@@ -212,9 +218,10 @@ Polynomial* findPol(const string& name){
     for(iter;iter!=&Polynomials[MAX_POLS];++iter){
         if(iter->name==name){
             return iter;
+            std::cout<<"'"<<name<<"' found."<<std::endl;
         }
     }
-    std::cout<<"Error, didn't find the name in Polynomials"<<std::endl;
+    std::cout<<"Error, didn't find the '"<<name<<"' in Polynomials."<<std::endl;
     return NULL;
 }
 void assignCtoX(){
@@ -362,7 +369,6 @@ Polynomial Polynomial::operator+(const Polynomial &other){
     }
     return temp;
 }
-Polynomial Polynomial::operator+=(const Polynomial &other){*this=*this+other;}
 Polynomial Polynomial::operator-(const Polynomial &other){
     Polynomial temp(*this);
     temp.name=this->name;
@@ -372,7 +378,6 @@ Polynomial Polynomial::operator-(const Polynomial &other){
     }
     return temp;
 }
-Polynomial Polynomial::operator-=(const Polynomial &other){*this=*this-other;}
 Polynomial Polynomial::operator*(const Polynomial &other){
     Polynomial temp;
     temp.name=this->name;
@@ -385,7 +390,6 @@ Polynomial Polynomial::operator*(const Polynomial &other){
     }
     return temp;
 }
-Polynomial Polynomial::operator*=(const Polynomial &other){*this=*this*other;}
 void Polynomial::operator=(const Polynomial &other){
     this->name=other.name;
     int i=0;

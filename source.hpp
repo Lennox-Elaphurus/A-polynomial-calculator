@@ -11,11 +11,8 @@ public:
     Polynomial(const Polynomial &other);
     Polynomial(const string & name0, const string & pol0);
     Polynomial operator+(const Polynomial &other);
-    Polynomial operator+=(const Polynomial &other);
     Polynomial operator-(const Polynomial &other);
-    Polynomial operator-=(const Polynomial &other);
     Polynomial operator*(const Polynomial &other);
-    Polynomial operator*=(const Polynomial &other);
     void operator=(const Polynomial &other);
     friend std::ostream& operator<<(std::ostream& cout,const Polynomial& other);
     //bool operator==(const Polynomial &other) const;
