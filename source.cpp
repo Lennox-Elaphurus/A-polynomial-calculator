@@ -83,11 +83,13 @@ bool isValidPol(const std::string& pol){
     return isValid;
 }
 bool isUsed(const std::string& name){//friend
-    Polynomial* iter=&Polynomials[0];
+    Polynomial* polPtr=&Polynomials[0];
     bool used=false;
-    for(iter;iter!=&Polynomials[MAX_POLS];++iter){
-        if(iter->name==name){
+    //std::cout<<"Verifying '"<<name<<"'."<<std::endl;
+    for(polPtr;polPtr!=&Polynomials[MAX_POLS];++polPtr){
+        if(polPtr->name==name){
             used=true;
+            break;
         }
     }
     return used;
@@ -156,7 +158,7 @@ Polynomial Polynomials[MAX_POLS]
         pol_name=mysubstr(combinedPol,0,operatorIndex[cntIndex]);
         //thePol.assign(combinedPol,0,operatorIndex.at(0));
         ++cntIndex;//turn to next operation
-        if(isValidPol(pol_name)){
+        if(isUsed(pol_name)){
             std::cout<<"valid pol_name:'"<<pol_name<<"' ."<<std::endl;
             thePol=findPol(pol_name);// is like pointer,let the p in p=...,pointed by thePol
         }else{
@@ -166,16 +168,19 @@ Polynomial Polynomials[MAX_POLS]
     }//end deal with '='
 
     //calculate
-    int lastIndex=0;
+    bool isFirst=true;//is the first time in the for
     Polynomial* thePol_tmp;//the pol to +-*
     for (cntIndex;cntIndex<MAX_TIMES;++cntIndex){
-        if(cntIndex==0){
+        if(isFirst){
             pol_name_tmp=mysubstr(combinedPol,0,operatorIndex[cntIndex]);
+            isFirst=false;
+            --cntIndex;
         }else{//cntIndex!=0
             pol_name_tmp=mysubstr(combinedPol,operatorIndex[cntIndex],operatorIndex[cntIndex+1]);
         }
-        if(isValidPol(pol_name_tmp)){
-            std::cout<<"valid pol_name_tmp:'"<<pol_name<<"' ."<<std::endl;
+        std::cout<<"pol_name_tmp:'"<<pol_name_tmp<<"' ."<<std::endl;
+        if(isUsed(pol_name_tmp)){
+            //std::cout<<"valid pol_name_tmp:'"<<pol_name_tmp<<"' ."<<std::endl;
             thePol_tmp=findPol(pol_name_tmp);
         }else{
             std::cout<<"Error, couldn't find "<<pol_name_tmp<<" ."<<std::endl;
