@@ -1,8 +1,7 @@
 #include<iostream>
 #include<string>
 #include <math.h>
-#define MAX_TIMES 20
-#define MAX_LENGTH 10
+#define MAX_TIMES 100
 #define MAX_SIZE 1024
 #define MAX_POLS 100
 #define MAX_OPERATIONS 100
@@ -16,7 +15,7 @@ void menu(){
     <<"\t[4] When x = c, 'ax^n+bx^(n-1)+...' = ?\n"//assign number to x in Polynomial
     <<"\t[5] Check if p1 = p2\n"
     <<"\t[6] Close\n";
-    std::cout<<"1/2/3/4/5?"<<std::endl;
+    std::cout<<"1/2/3/4/5/6?"<<std::endl;
     int operation=0;
     //std::cin.ignore(MAX_SIZE);
     std::cin>>operation;
@@ -182,8 +181,11 @@ Polynomial Polynomials[MAX_POLS]
     for (cntIndex;cntIndex<MAX_TIMES;++cntIndex){
         if(operatorIndex[cntIndex]==0&&operatorIndex[cntIndex+1]==0) break;
         if(isFirst){
-            pol_name_tmp=mysubstr(combinedPol,operatorIndex[cntIndex-1],operatorIndex[cntIndex]);
-            //isFirst=false; need to change at the end of this turn to use it in switch
+            if(cntIndex-1<0){
+                pol_name_tmp=mysubstr(combinedPol,0,operatorIndex[cntIndex]);
+            }else{//cntIndex-1>=0
+                pol_name_tmp=mysubstr(combinedPol,operatorIndex[cntIndex-1],operatorIndex[cntIndex]);
+            }//isFirst=false; need to change at the end of this turn to use it in switch
         }else{//cntIndex!=0
             pol_name_tmp=mysubstr(combinedPol,operatorIndex[cntIndex],operatorIndex[cntIndex+1]);
         }
@@ -343,7 +345,7 @@ Polynomial::Polynomial(const string & name0, const string & pol0){
     int exponent=0;     //zhishu
     while(true){
         //std::cout<<"Substring brfore:'"<<substring<<"'\n";
-        if(start<MAX_LENGTH&&start!=-1&&start!=0)
+        if(start<substring.length()&&start!=-1&&start!=0)
         // when start=-1,it means didn't find "^"
         //when start=0,it's the original string
             substring=substring.substr(start+1);//substring from the next element of "^"

@@ -1,11 +1,10 @@
-#define MAX_TIMES 20
-#define MAX_LENGTH 10
+#define MAX_TIMES 100
 #include <string>
 using std::string;
 class Polynomial
 {
 public:
-    std::string name; //MAX_LENGTH name of Polynomial
+    std::string name; // name of Polynomial
     int pol[MAX_TIMES];  //MAX_TIMES
     Polynomial();
     Polynomial(const Polynomial &other);
