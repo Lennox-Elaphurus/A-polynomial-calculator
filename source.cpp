@@ -10,11 +10,12 @@
 Polynomial Polynomials[MAX_POLS];
 void menu(){
     std::cout<<"\nYou want to:"<<std::endl;
-    std::cout<<"\t[1] Write 'ax^n+bx^n-1+...' as 'p'\n"//write and save by name
+    std::cout<<"\t[1] Write 'ax^n+bx^n-1+...' as 'p'\n"//Write and save by name
     <<"\t[2] Watch 'ax^n+bx^(n-1)+...(cx^0)' you wrote\n"//list the stored Polynomials
     <<"\t[3] p1 + p2 - p3 * p4 (write as you want)\n"//free calculation by operator
     <<"\t[4] When x = c, 'ax^n+bx^(n-1)+...' = ?\n"//assign number to x in Polynomial
-    <<"\t[5] Close\n";
+    <<"\t[5] Check if p1 = p2\n"
+    <<"\t[6] Close\n";
     std::cout<<"1/2/3/4/5?"<<std::endl;
     int operation=0;
     //std::cin.ignore(MAX_SIZE);
@@ -36,7 +37,11 @@ void menu(){
             assignCtoX();
             break;
         }
-        case 5:{//Close
+        case 5:{//verify whether p1==p2
+            verifyP1P2();
+            break;
+        }
+        case 6:{//Close
             return;
         }
         default:{
@@ -460,4 +465,67 @@ std::string mysubstr(const std::string& str,int start,int end){
         tempStr+=str[i];
     }
     return tempStr;
+}
+void verifyP1P2(){
+    std::string p1_name;
+    Polynomial* p1;
+    std::string p2_name;
+    Polynomial* p2;
+    bool isEqual=true;
+    int i=0;
+    //p1
+    std::cout<<"Write the name of p1 here:";
+    std::cin>>p1_name;
+    if(isUsed(p1_name)){
+        p1=findPol(p1_name);
+    }else{
+        std::cout<<"You didn't tell me what is '"<<p1_name<<"' ."<<std::endl;
+        std::cout<<"If you want to go back to menu, write \"DEFAULT\""<<std::endl;
+        verifyP1P2();//back to start
+    }
+    //p2
+    top2:
+    std::cout<<"Write the name of p2 here:";
+    std::cin>>p2_name;
+    if(isUsed(p2_name)){
+        p2=findPol(p2_name);
+    }else{
+        std::cout<<"You didn't tell me what is '"<<p2_name<<"' ."<<std::endl;
+        std::cout<<"If you want to go back to menu, write \"DEFAULT\""<<std::endl;
+        goto top2;
+    }
+    if(p1_name=="DEFAULT"||p2_name=="DEFAULT"){
+        menu();
+        return;
+    }else{
+        p1->simp();
+        p2->simp();
+        for(i=0;i<MAX_TIMES;++i){
+            if(p1->pol[i]!=p2->pol[i]){
+                isEqual=false;
+                break;
+            }
+        }
+        if(isEqual){
+            std::cout<<p1->name<<" is equal to "<<p2->name<<std::endl;
+            menu();
+            return;
+        }
+        //if p1=-p2
+        isEqual=true;
+        for(i=0;i<MAX_TIMES;++i){
+            if(p1->pol[i]!=-p2->pol[i]){
+                isEqual=false;
+                break;
+            }
+        }
+        if(isEqual){
+            std::cout<<p1->name<<" is equal to "<<p2->name<<std::endl;
+            menu();
+            return;
+        }else{
+            std::cout<<p1->name<<" is NOT equal to "<<p2->name<<std::endl;
+            menu();
+        }
+    }
 }

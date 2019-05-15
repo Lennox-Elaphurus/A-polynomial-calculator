@@ -35,5 +35,7 @@ Polynomial* findPol(const std::string&  name);
 
 void assignCtoX();
 
+void verifyP1P2();
+
 std::ostream& operator<<(std::ostream& cout,const Polynomial& other);
 std::string mysubstr(const std::string& str,int start,int end);

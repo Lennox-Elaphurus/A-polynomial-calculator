@@ -5,6 +5,7 @@
 1. Save polynomial by name.
 2. Calculate the product , sum and difference of stored polynomials.
 3. When x was assigned, calculate the value of polynomials.
+4. Verify whether two polynomial is equal.
 
 ## Get started
 
