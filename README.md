@@ -13,7 +13,7 @@
 
 ## Environment
 
-- Version: 1.33.1 (user setup)
+- Visual Studio Code Version: 1.33.1
 - Electron: 3.1.6
 - Node.js: 10.2.0
 - V8: 6.6.346.32
