@@ -154,7 +154,6 @@ Polynomial Polynomials[MAX_POLS]
 
     //deal with '='
     Polynomial* thePol;
-    Polynomial newPol(pol_name);
     if(existAssignOperator){//pol=...
         pol_name=mysubstr(combinedPol,0,operatorIndex[cntIndex]);
         //thePol.assign(combinedPol,0,operatorIndex.at(0));
@@ -165,18 +164,18 @@ Polynomial Polynomials[MAX_POLS]
         }else{
             std::cout<<"You used a new name: '"<<pol_name<<"' ."<<std::endl;
             thePol=findPol("DEFAULT");//find an empty element
-            *thePol=newPol;
+            answer.name=pol_name;//assign name to final answer then assign to *thePol
         }
     }//end deal with '='
 
     //calculate
     bool isFirst=true;//is the first time in the for
-    if(existAssignOperator) isFirst=false;
+    //if(existAssignOperator) isFirst=false;
     Polynomial* thePol_tmp;//the pol to +-*
     for (cntIndex;cntIndex<MAX_TIMES;++cntIndex){
         if(operatorIndex[cntIndex]==0&&operatorIndex[cntIndex+1]==0) break;
         if(isFirst){
-            pol_name_tmp=mysubstr(combinedPol,0,operatorIndex[cntIndex]);
+            pol_name_tmp=mysubstr(combinedPol,operatorIndex[cntIndex-1],operatorIndex[cntIndex]);
             //isFirst=false; need to change at the end of this turn to use it in switch
         }else{//cntIndex!=0
             pol_name_tmp=mysubstr(combinedPol,operatorIndex[cntIndex],operatorIndex[cntIndex+1]);
@@ -217,7 +216,7 @@ Polynomial Polynomials[MAX_POLS]
 
     if(existAssignOperator){
         *thePol=answer;
-        std::cout<<pol_name<<" = "<<*thePol<<std::endl;
+        std::cout<<*thePol<<std::endl;
     }else{
         std::cout<<combinedPol<<" = "<<answer<<std::endl;
     }
@@ -433,6 +432,7 @@ Polynomial::Polynomial(){
 std::string mysubstr(const std::string& str,int start,int end){
     std::string tempStr;
     if(end==0) end=str.length();
+    if(start<0) start=0;
     int i=start+1;
     if(start==0) i-=1;
     for(i;i<end;++i){
