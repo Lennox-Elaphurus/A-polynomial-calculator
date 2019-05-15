@@ -9,7 +9,7 @@ public:
     int pol[MAX_TIMES];  //MAX_TIMES
     Polynomial();
     Polynomial(const Polynomial &other);
-    Polynomial(const string & name0, const string & pol0);
+    Polynomial(const string & name0, const string & pol0="");
     Polynomial operator+(const Polynomial &other);
     Polynomial operator-(const Polynomial &other);
     Polynomial operator*(const Polynomial &other);

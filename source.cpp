@@ -154,6 +154,7 @@ Polynomial Polynomials[MAX_POLS]
 
     //deal with '='
     Polynomial* thePol;
+    Polynomial newPol(pol_name);
     if(existAssignOperator){//pol=...
         pol_name=mysubstr(combinedPol,0,operatorIndex[cntIndex]);
         //thePol.assign(combinedPol,0,operatorIndex.at(0));
@@ -162,8 +163,9 @@ Polynomial Polynomials[MAX_POLS]
             std::cout<<"valid pol_name:'"<<pol_name<<"' ."<<std::endl;
             thePol=findPol(pol_name);// is like pointer,let the p in p=...,pointed by thePol
         }else{
-            std::cout<<"Error, couldn't find "<<pol_name<<" ."<<std::endl;
-            return;
+            std::cout<<"You used a new name: '"<<pol_name<<"' ."<<std::endl;
+            thePol=findPol("DEFAULT");//find an empty element
+            *thePol=newPol;
         }
     }//end deal with '='
 
@@ -217,7 +219,7 @@ Polynomial Polynomials[MAX_POLS]
         *thePol=answer;
         std::cout<<pol_name<<" = "<<*thePol<<std::endl;
     }else{
-        std::cout<<"The answer is "<<answer<<std::endl;
+        std::cout<<combinedPol<<" = "<<answer<<std::endl;
     }
     menu();
 }
